@@ -14,6 +14,10 @@ classdef Msup < metadata.Trial
       stopTrial
       sync
       isCorrect
+      isRepeat
+      isSuccess
+      isFailure
+      isAbort
    end
    properties(SetAccess=protected)
       version = '0.1.0'
