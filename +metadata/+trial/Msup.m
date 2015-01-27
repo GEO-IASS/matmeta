@@ -13,6 +13,7 @@ classdef Msup < metadata.Trial
       overlap
       stopTrial
       sync
+      start
       isCorrect
       isRepeat
       isSuccess
