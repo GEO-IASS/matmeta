@@ -5,9 +5,13 @@ classdef Event < metadata.Section
       description
       timeUnit
       timeReference
+      tStart
+      tEnd
+      experiment
+   end
+   properties(SetAccess = protected, Dependent = true, Transient = true)
       time
       duration
-      experiment
    end
    
    methods
@@ -24,8 +28,8 @@ classdef Event < metadata.Section
          p.addParamValue('description','',@ischar);
          p.addParamValue('timeUnit','seconds',@ischar);
          p.addParamValue('timeReference',[],@(x) isa(x,'metadata.Event'));
-         p.addParamValue('time','',@(x) ischar(x)||isscalar(x));
-         p.addParamValue('duration',0,@isscalar);
+         p.addParamValue('tStart',[],@isnumeric);
+         p.addParamValue('tEnd',[],@isnumeric);
          p.addParamValue('experiment',[],@(x) isa(x,'metadata.Experiment'));
          p.parse(varargin{:});
          par = p.Results;
@@ -34,9 +38,45 @@ classdef Event < metadata.Section
          self.description = par.description;
          self.timeUnit = par.timeUnit;
          self.timeReference = par.timeReference;
-         self.time = par.time;
-         self.duration = par.duration;
+         self.tStart = par.tStart;
+         self.tEnd = par.tEnd;
          self.experiment = par.experiment;
+      end
+      
+      function time = get.time(self)
+         if ~isempty(self.tStart) && ~isempty(self.tEnd)
+            time = [self.tStart self.tEnd];
+         else
+            time = [NaN NaN];
+         end
+      end
+      
+      function duration = get.duration(self)
+         if ~isempty(self.tStart) && ~isempty(self.tEnd)
+            duration = self.tEnd - self.tStart;
+         else
+            duration = NaN;
+         end
+      end
+      
+      function set.tStart(self,tStart)
+         assert(isscalar(tStart) && isnumeric(tStart),'Event:tStart:InputFormat',...
+            'tStart must be a numeric scalar.');
+         if ~isempty(self.tEnd)
+            assert(tStart <= self.tEnd,'Event:tStart:InputValue',...
+               'tStart must be <= tEnd.');
+         end
+         self.tStart = tStart;
+      end
+      
+      function set.tEnd(self,tEnd)
+         assert(isscalar(tEnd) && isnumeric(tEnd),'Event:tEnd:InputFormat',...
+            'tEnd must be a numeric scalar.');
+         if ~isempty(self.tStart)
+            assert(self.tStart <= tEnd,'Event:tEnd:InputValue',...
+               'tStart must be <= tEnd.');
+         end
+         self.tEnd = tEnd;
       end
    end
 end
