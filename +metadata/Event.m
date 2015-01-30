@@ -1,4 +1,6 @@
 % Event
+% TODO:
+%   o clean up setting of tStart/tEnd, ie, can Event have one but not other
 classdef Event < metadata.Section
    properties
       name
@@ -70,13 +72,17 @@ classdef Event < metadata.Section
       end
       
       function set.tEnd(self,tEnd)
-         assert(isscalar(tEnd) && isnumeric(tEnd),'Event:tEnd:InputFormat',...
-            'tEnd must be a numeric scalar.');
-         if ~isempty(self.tStart)
-            assert(self.tStart <= tEnd,'Event:tEnd:InputValue',...
-               'tStart must be <= tEnd.');
+         if isempty(tEnd)
+            self.tEnd = self.tStart;
+         else
+            assert(isscalar(tEnd) && isnumeric(tEnd),'Event:tEnd:InputFormat',...
+               'tEnd must be a numeric scalar.');
+            if ~isempty(self.tStart)
+               assert(self.tStart <= tEnd,'Event:tEnd:InputValue',...
+                  'tStart must be <= tEnd.');
+            end
+            self.tEnd = tEnd;
          end
-         self.tEnd = tEnd;
       end
    end
 end
