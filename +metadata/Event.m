@@ -62,18 +62,22 @@ classdef Event < metadata.Section
       end
       
       function set.tStart(self,tStart)
-         assert(isscalar(tStart) && isnumeric(tStart),'Event:tStart:InputFormat',...
-            'tStart must be a numeric scalar.');
-         if ~isempty(self.tEnd)
-            assert(tStart <= self.tEnd,'Event:tStart:InputValue',...
-               'tStart must be <= tEnd.');
+         if ~isempty(tStart)
+            assert(isscalar(tStart) && isnumeric(tStart),'Event:tStart:InputFormat',...
+               'tStart must be a numeric scalar.');
+            if ~isempty(self.tEnd)
+               assert(tStart <= self.tEnd,'Event:tStart:InputValue',...
+                  'tStart must be <= tEnd.');
+            end
+            self.tStart = tStart;
          end
-         self.tStart = tStart;
       end
       
       function set.tEnd(self,tEnd)
          if isempty(tEnd)
-            self.tEnd = self.tStart;
+            if ~isempty(self.tStart)
+               self.tEnd = self.tStart;
+            end
          else
             assert(isscalar(tEnd) && isnumeric(tEnd),'Event:tEnd:InputFormat',...
                'tEnd must be a numeric scalar.');
